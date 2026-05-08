@@ -27,6 +27,8 @@ async function startServer() {
     storage: multerS3({
       s3: s3 as any,
       bucket: bucketName,
+      contentType: multerS3.AUTO_CONTENT_TYPE,
+      contentDisposition: "inline",
       metadata: (req, file, cb) => {
         cb(null, { fieldName: file.fieldname });
       },
