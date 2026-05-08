@@ -1,0 +1,184 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN_KELURAHAN
+  PETUGAS
+  WARGA
+}
+
+enum StatusSurat {
+  PENDING
+  DIPROSES
+  DITOLAK
+  SELESAI
+}
+
+enum StatusLaporan {
+  PENDING
+  DIVERIFIKASI
+  DIPROSES
+  SELESAI
+  DITOLAK
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String
+  name          String
+  nik           String?   @unique
+  phoneNumber   String?
+  address       String?
+  role          Role      @default(WARGA)
+  villageId     String?
+  village       Village?  @relation(fields: [villageId], references: [id])
+  letters       Letter[]
+  complaints    Complaint[]
+  assignments   ComplaintAssignment[]
+  comments      ComplaintComment[]
+  logs          ActivityLog[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([villageId])
+}
+
+model Village {
+  id          String    @id @default(uuid())
+  name        String
+  district    String
+  regency     String
+  users       User[]
+  letters     Letter[]
+  complaints  Complaint[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model LetterType {
+  id          String    @id @default(uuid())
+  name        String    // e.g., Surat Domisili, Surat Usaha
+  description String?
+  template    String?   // Could store metadata about the template
+  letters     Letter[]
+  requirements LetterRequirement[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model LetterRequirement {
+  id            String      @id @default(uuid())
+  letterTypeId  String
+  letterType    LetterType  @relation(fields: [letterTypeId], references: [id])
+  name          String      // e.g., KTP, KK, Surat Pengantar RT
+  isRequired    Boolean     @default(true)
+}
+
+model Letter {
+  id              String      @id @default(uuid())
+  userId          String
+  user            User        @relation(fields: [userId], references: [id])
+  letterTypeId    String
+  letterType      LetterType  @relation(fields: [letterTypeId], references: [id])
+  villageId       String
+  village         Village     @relation(fields: [villageId], references: [id])
+  letterNumber    String?     @unique
+  status          StatusSurat @default(PENDING)
+  rejectionReason String?
+  attachments     String?     // JSON or serialized string of file paths
+  qrCode          String?
+  processedAt     DateTime?
+  processedBy     String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([userId])
+  @@index([letterTypeId])
+  @@index([villageId])
+}
+
+model ComplaintCategory {
+  id          String      @id @default(uuid())
+  name        String      // e.g., Jalan Rusak, Sampah
+  complaints  Complaint[]
+}
+
+model Complaint {
+  id              String          @id @default(uuid())
+  userId          String
+  user            User            @relation(fields: [userId], references: [id])
+  categoryId      String
+  category        ComplaintCategory @relation(fields: [categoryId], references: [id])
+  villageId       String
+  village         Village         @relation(fields: [villageId], references: [id])
+  title           String
+  description     String          @db.Text
+  location        String?
+  latitude        Float?
+  longitude       Float?
+  status          StatusLaporan   @default(PENDING)
+  priority        Priority        @default(MEDIUM)
+  images          ComplaintImage[]
+  assignments     ComplaintAssignment[]
+  comments        ComplaintComment[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([userId])
+  @@index([categoryId])
+  @@index([villageId])
+}
+
+model ComplaintImage {
+  id          String    @id @default(uuid())
+  complaintId String
+  complaint   Complaint @relation(fields: [complaintId], references: [id])
+  url         String
+  createdAt   DateTime  @default(now())
+}
+
+model ComplaintComment {
+  id          String    @id @default(uuid())
+  complaintId String
+  complaint   Complaint @relation(fields: [complaintId], references: [id])
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  content     String    @db.Text
+  createdAt   DateTime  @default(now())
+}
+
+model ComplaintAssignment {
+  id          String    @id @default(uuid())
+  complaintId String
+  complaint   Complaint @relation(fields: [complaintId], references: [id])
+  petugasId   String
+  petugas     User      @relation(fields: [petugasId], references: [id])
+  note        String?   @db.Text
+  assignedAt  DateTime  @default(now())
+  completedAt DateTime?
+}
+
+model ActivityLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String
+  details   String?  @db.Text
+  ipAddress String?
+  createdAt DateTime @default(now())
+}

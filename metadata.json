@@ -1,0 +1,6 @@
+{
+  "name": "SIWARGA",
+  "description": "Sistem Pelayanan Administrasi Surat dan Pengaduan Masyarakat Digital Terintegrasi.",
+  "requestFramePermissions": ["camera", "geolocation"],
+  "majorCapabilities": ["auth", "database", "storage"]
+}
