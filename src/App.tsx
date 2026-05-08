@@ -36,7 +36,13 @@ export default function App() {
     return (
       <Router>
         <Routes>
-          <Route path="/login" element={<Login onLogin={() => setIsAuthenticated(true)} />} />
+          <Route path="/login" element={<Login onLogin={() => {
+            setIsAuthenticated(true);
+            const storedUser = localStorage.getItem("user");
+            if (storedUser) {
+              try { setUser(JSON.parse(storedUser)); } catch (e) {}
+            }
+          }} />} />
           <Route path="/register" element={<Register />} />
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>

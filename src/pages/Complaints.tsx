@@ -25,16 +25,40 @@ export default function Complaints({ user }: { user: any }) {
       html:
         '<input id="swal-title" class="swal2-input" placeholder="Judul Laporan" style="margin-bottom: 10px;">' +
         '<textarea id="swal-desc" class="swal2-textarea" placeholder="Deskripsi kejadian..."></textarea>' +
-        '<input id="swal-loc" class="swal2-input" placeholder="Lokasi Kejadian (Opsional)">',
+        '<input id="swal-loc" class="swal2-input" placeholder="Lokasi Kejadian (Opsional)" style="margin-bottom: 10px;">' +
+        '<div style="text-align: left; padding: 0 1rem;"><label class="text-xs text-gray-500 font-bold mb-1">Upload Foto Kejadian:</label><br><input type="file" id="swal-file" class="swal2-file" accept="image/*"></div>',
       focusConfirm: false,
       showCancelButton: true,
       confirmButtonText: 'Laporkan',
       cancelButtonText: 'Batal',
-      preConfirm: () => {
+      showLoaderOnConfirm: true,
+      preConfirm: async () => {
+        const fileInput = document.getElementById('swal-file') as HTMLInputElement;
+        const file = fileInput.files && fileInput.files.length > 0 ? fileInput.files[0] : null;
+        let fileUrl = "";
+
+        if (file) {
+          const formData = new FormData();
+          formData.append("file", file);
+          try {
+            const uploadRes = await fetch("/api/upload", {
+              method: "POST",
+              headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+              body: formData
+            });
+            const uploadData = await uploadRes.json();
+            fileUrl = uploadData.url;
+          } catch (e) {
+            Swal.showValidationMessage("Gagal mengupload foto ke S3");
+            return false;
+          }
+        }
+
         return {
           title: (document.getElementById('swal-title') as HTMLInputElement).value,
           description: (document.getElementById('swal-desc') as HTMLTextAreaElement).value,
-          location: (document.getElementById('swal-loc') as HTMLInputElement).value
+          location: (document.getElementById('swal-loc') as HTMLInputElement).value,
+          images: fileUrl ? [fileUrl] : []
         }
       }
     });

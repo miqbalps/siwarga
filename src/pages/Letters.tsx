@@ -24,15 +24,39 @@ export default function Letters({ user }: { user: any }) {
       title: 'Ajukan Surat Baru',
       html:
         '<input id="swal-type" class="swal2-input" placeholder="Jenis Surat (Opsional)" style="margin-bottom: 10px;">' +
-        '<input id="swal-desc" class="swal2-input" placeholder="Keterangan / Berkas Tambahan">',
+        '<input id="swal-desc" class="swal2-input" placeholder="Keterangan / Keperluan" style="margin-bottom: 10px;">' +
+        '<div style="text-align: left; padding: 0 1rem;"><label class="text-xs text-gray-500 font-bold mb-1">Upload Berkas Pendukung (Opsional):</label><br><input type="file" id="swal-file" class="swal2-file"></div>',
       focusConfirm: false,
       showCancelButton: true,
       confirmButtonText: 'Ajukan',
       cancelButtonText: 'Batal',
-      preConfirm: () => {
+      showLoaderOnConfirm: true,
+      preConfirm: async () => {
+        const fileInput = document.getElementById('swal-file') as HTMLInputElement;
+        const file = fileInput.files && fileInput.files.length > 0 ? fileInput.files[0] : null;
+        let fileUrl = "";
+
+        if (file) {
+          const formData = new FormData();
+          formData.append("file", file);
+          try {
+            const uploadRes = await fetch("/api/upload", {
+              method: "POST",
+              headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+              body: formData
+            });
+            const uploadData = await uploadRes.json();
+            fileUrl = uploadData.url;
+          } catch (e) {
+            Swal.showValidationMessage("Gagal mengupload file ke S3");
+            return false;
+          }
+        }
+
         return {
           type: (document.getElementById('swal-type') as HTMLInputElement).value,
-          desc: (document.getElementById('swal-desc') as HTMLInputElement).value
+          desc: (document.getElementById('swal-desc') as HTMLInputElement).value,
+          fileUrl: fileUrl
         }
       }
     });
@@ -42,7 +66,7 @@ export default function Letters({ user }: { user: any }) {
         const res = await fetch("/api/letters", {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
-          body: JSON.stringify({ attachments: formValues.desc })
+          body: JSON.stringify({ attachments: formValues.fileUrl || formValues.desc })
         });
         if (res.ok) {
           Swal.fire("Berhasil", "Surat berhasil diajukan", "success");

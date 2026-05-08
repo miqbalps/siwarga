@@ -43,6 +43,8 @@ async function startServer() {
     }),
   });
 
+
+
   // Auth Middleware
   const authenticateToken = (req: any, res: any, next: any) => {
     const authHeader = req.headers['authorization'];
