@@ -19,3 +19,190 @@
     @apply bg-admin-bg text-admin-text selection:bg-blue-100 selection:text-blue-900;
   }
 }
+
+/* ── SweetAlert2 Custom Theme ─────────────────────────── */
+.swal2-popup {
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif !important;
+  border-radius: 12px !important;
+  padding: 2rem 1.5rem !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 20px 60px -12px rgba(0,0,0,0.15) !important;
+}
+
+.swal2-title {
+  font-size: 1.1rem !important;
+  font-weight: 700 !important;
+  color: #1f2937 !important;
+  padding: 0 0 0.5rem 0 !important;
+}
+
+.swal2-html-container {
+  text-align: left !important;
+  padding: 0 !important;
+  margin: 0.75rem 0 0 0 !important;
+}
+
+.swal2-popup .swal-form-group {
+  margin-bottom: 1rem;
+}
+
+.swal2-popup .swal-form-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+
+.swal2-popup .swal-form-input,
+.swal2-popup .swal-form-select,
+.swal2-popup .swal-form-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: "Inter", sans-serif;
+  color: #1f2937;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.swal2-popup .swal-form-input:focus,
+.swal2-popup .swal-form-select:focus,
+.swal2-popup .swal-form-textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+}
+
+.swal2-popup .swal-form-input::placeholder,
+.swal2-popup .swal-form-textarea::placeholder {
+  color: #9ca3af;
+}
+
+.swal2-popup .swal-form-textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.swal2-popup .swal-form-file-wrapper {
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  background: #f9fafb;
+  transition: border-color 0.2s;
+  cursor: pointer;
+}
+
+.swal2-popup .swal-form-file-wrapper:hover {
+  border-color: #3b82f6;
+}
+
+.swal2-popup .swal-form-file-wrapper input[type="file"] {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.swal2-popup .swal-detail-row {
+  display: flex;
+  padding: 10px 0;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 13px;
+}
+
+.swal2-popup .swal-detail-row:last-child {
+  border-bottom: none;
+}
+
+.swal2-popup .swal-detail-label {
+  width: 130px;
+  flex-shrink: 0;
+  font-weight: 600;
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.swal2-popup .swal-detail-value {
+  color: #1f2937;
+  font-weight: 500;
+  flex: 1;
+}
+
+.swal2-popup .swal-detail-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.swal2-popup .swal-detail-desc {
+  margin-top: 16px;
+  padding: 14px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #f3f4f6;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #4b5563;
+}
+
+.swal2-popup .swal-detail-image {
+  margin-top: 16px;
+  border-radius: 8px;
+  max-width: 100%;
+  border: 1px solid #e5e7eb;
+}
+
+.swal2-popup .swal-logo-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.swal2-popup .swal-logo-header img {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+}
+
+.swal2-confirm {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  padding: 10px 28px !important;
+  border-radius: 8px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+}
+
+.swal2-cancel {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  padding: 10px 22px !important;
+  border-radius: 8px !important;
+  background: #f3f4f6 !important;
+  color: #4b5563 !important;
+}
+
+.swal2-cancel:hover {
+  background: #e5e7eb !important;
+}
+
+.swal2-actions {
+  margin-top: 1.25rem !important;
+  gap: 8px !important;
+}
+
+.swal2-validation-message {
+  font-size: 12px !important;
+  border-radius: 8px !important;
+}

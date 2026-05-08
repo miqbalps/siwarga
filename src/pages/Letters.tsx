@@ -30,10 +30,23 @@ export default function Letters({ user }: { user: any }) {
     const typeOptions = types.map(t => `<option value="${t.id}">${t.name}</option>`).join("");
     const { value: formValues } = await Swal.fire({
       title: "Ajukan Surat Baru",
-      html:
-        `<select id="swal-type" class="swal2-select" style="margin-bottom:12px;width:100%;padding:8px;border:1px solid #d5d5d5;border-radius:4px;font-size:14px;"><option value="">Pilih Jenis Surat</option>${typeOptions}</select>` +
-        '<input id="swal-desc" class="swal2-input" placeholder="Keterangan / Keperluan" style="margin-bottom:12px;">' +
-        '<div style="text-align:left;padding:0 1rem;"><label style="font-size:12px;color:#6b7280;font-weight:600;">Berkas Pendukung (Opsional):</label><br><input type="file" id="swal-file" style="margin-top:6px;font-size:13px;"></div>',
+      html: `
+        <div class="swal-logo-header"><img src="/logo.png" alt="SIWARGA" /><span style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">SIWARGA</span></div>
+        <div class="swal-form-group">
+          <label class="swal-form-label">Jenis Surat</label>
+          <select id="swal-type" class="swal-form-select"><option value="">— Pilih Jenis Surat —</option>${typeOptions}</select>
+        </div>
+        <div class="swal-form-group">
+          <label class="swal-form-label">Keterangan / Keperluan</label>
+          <input id="swal-desc" class="swal-form-input" placeholder="Tuliskan keperluan Anda..." />
+        </div>
+        <div class="swal-form-group">
+          <label class="swal-form-label">Berkas Pendukung (Opsional)</label>
+          <div class="swal-form-file-wrapper">
+            <input type="file" id="swal-file" />
+          </div>
+        </div>
+      `,
       focusConfirm: false,
       showCancelButton: true,
       confirmButtonText: "Ajukan",
@@ -113,21 +126,30 @@ export default function Letters({ user }: { user: any }) {
     }
   };
 
+  const statusBadge = (s: string) => {
+    const map: Record<string, string> = { SELESAI: 'background:#dcfce7;color:#15803d;', DIPROSES: 'background:#fef9c3;color:#a16207;', DITOLAK: 'background:#fee2e2;color:#b91c1c;', PENDING: 'background:#dbeafe;color:#1d4ed8;' };
+    return `<span class="swal-detail-badge" style="${map[s] || map.PENDING}">${s}</span>`;
+  };
+
   const handleDetail = (item: any) => {
     Swal.fire({
-      title: item.letterType?.name || "Detail Surat",
+      title: " ",
       html: `
-        <div style="text-align:left;font-size:13px;">
-          <p><b>Pemohon:</b> ${item.user?.name || "-"}</p>
-          <p><b>No. Registrasi:</b> ${item.letterNumber || "-"}</p>
-          <p><b>Status:</b> <span style="font-weight:700;text-transform:uppercase;">${item.status}</span></p>
-          <p><b>Tanggal:</b> ${new Date(item.createdAt).toLocaleDateString("id-ID")}</p>
-          ${item.attachments ? `<p><b>Berkas:</b> <a href="${item.attachments}" target="_blank" style="color:#2563EB;">Lihat Berkas</a></p>` : ""}
-          ${item.rejectionReason ? `<p><b>Alasan Ditolak:</b> ${item.rejectionReason}</p>` : ""}
+        <div class="swal-logo-header"><img src="/logo.png" alt="SIWARGA" /><span style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">Detail Surat</span></div>
+        <div style="text-align:center;margin-bottom:16px;">
+          <div style="font-size:16px;font-weight:700;color:#1f2937;">${item.letterType?.name || 'Surat'}</div>
+          <div style="font-size:11px;color:#9ca3af;font-family:monospace;margin-top:4px;">${item.letterNumber || '-'}</div>
         </div>
+        <div class="swal-detail-row"><span class="swal-detail-label">Pemohon</span><span class="swal-detail-value">${item.user?.name || '-'}</span></div>
+        <div class="swal-detail-row"><span class="swal-detail-label">Jenis Surat</span><span class="swal-detail-value">${item.letterType?.name || '-'}</span></div>
+        <div class="swal-detail-row"><span class="swal-detail-label">Status</span><span class="swal-detail-value">${statusBadge(item.status)}</span></div>
+        <div class="swal-detail-row"><span class="swal-detail-label">Tanggal</span><span class="swal-detail-value">${new Date(item.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span></div>
+        ${item.attachments ? `<div class="swal-detail-row"><span class="swal-detail-label">Berkas</span><span class="swal-detail-value"><a href="${item.attachments}" target="_blank" style="color:#2563eb;font-weight:600;text-decoration:underline;">📎 Lihat / Unduh Berkas</a></span></div>` : ''}
+        ${item.rejectionReason ? `<div class="swal-detail-desc" style="background:#fee2e2;border-color:#fecaca;"><b style="color:#b91c1c;">Alasan Ditolak:</b> ${item.rejectionReason}</div>` : ''}
       `,
       confirmButtonText: "Tutup",
       confirmButtonColor: "#2563EB",
+      width: 480,
     });
   };
 

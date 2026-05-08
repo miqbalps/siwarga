@@ -46,8 +46,8 @@ export default function Sidebar({ user }: SidebarProps) {
   return (
     <aside className="w-64 bg-admin-sidebar flex flex-col shrink-0">
       <div className="h-16 flex items-center px-6 border-b border-admin-sidebar-border shadow-sm">
-        <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center mr-3 shadow-inner">
-          <span className="text-white font-bold text-xs">SW</span>
+        <div className="w-8 h-8 rounded-md overflow-hidden mr-3 shadow-inner bg-white/10 flex items-center justify-center">
+          <img src="/logo.png" alt="SIWARGA" className="w-full h-full object-cover" />
         </div>
         <span className="text-[#c2c7d0] font-semibold tracking-tight text-lg">SIWARGA</span>
       </div>

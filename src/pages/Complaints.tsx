@@ -30,12 +30,31 @@ export default function Complaints({ user }: { user: any }) {
     const catOptions = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join("");
     const { value: formValues } = await Swal.fire({
       title: "Buat Laporan Baru",
-      html:
-        '<input id="swal-title" class="swal2-input" placeholder="Judul Laporan" style="margin-bottom:12px;">' +
-        `<select id="swal-cat" class="swal2-select" style="margin-bottom:12px;width:100%;padding:8px;border:1px solid #d5d5d5;border-radius:4px;font-size:14px;"><option value="">Pilih Kategori</option>${catOptions}</select>` +
-        '<textarea id="swal-desc" class="swal2-textarea" placeholder="Deskripsi kejadian..."></textarea>' +
-        '<input id="swal-loc" class="swal2-input" placeholder="Lokasi Kejadian" style="margin-bottom:12px;">' +
-        '<div style="text-align:left;padding:0 1rem;"><label style="font-size:12px;color:#6b7280;font-weight:600;">Foto Kejadian (Opsional):</label><br><input type="file" id="swal-file" accept="image/*" style="margin-top:6px;font-size:13px;"></div>',
+      html: `
+        <div class="swal-logo-header"><img src="/logo.png" alt="SIWARGA" /><span style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">SIWARGA</span></div>
+        <div class="swal-form-group">
+          <label class="swal-form-label">Judul Laporan</label>
+          <input id="swal-title" class="swal-form-input" placeholder="Tuliskan judul laporan..." />
+        </div>
+        <div class="swal-form-group">
+          <label class="swal-form-label">Kategori</label>
+          <select id="swal-cat" class="swal-form-select"><option value="">— Pilih Kategori —</option>${catOptions}</select>
+        </div>
+        <div class="swal-form-group">
+          <label class="swal-form-label">Deskripsi Kejadian</label>
+          <textarea id="swal-desc" class="swal-form-textarea" placeholder="Jelaskan kejadian secara detail..."></textarea>
+        </div>
+        <div class="swal-form-group">
+          <label class="swal-form-label">Lokasi Kejadian</label>
+          <input id="swal-loc" class="swal-form-input" placeholder="Contoh: Jl. Merdeka No.12 RT 04" />
+        </div>
+        <div class="swal-form-group">
+          <label class="swal-form-label">Foto Kejadian (Opsional)</label>
+          <div class="swal-form-file-wrapper">
+            <input type="file" id="swal-file" accept="image/*" />
+          </div>
+        </div>
+      `,
       focusConfirm: false,
       showCancelButton: true,
       confirmButtonText: "Laporkan",
@@ -118,20 +137,26 @@ export default function Complaints({ user }: { user: any }) {
     }
   };
 
+  const statusBadge = (s: string) => {
+    const map: Record<string, string> = { SELESAI: 'background:#dcfce7;color:#15803d;', DIPROSES: 'background:#fef9c3;color:#a16207;', DITOLAK: 'background:#fee2e2;color:#b91c1c;', DIVERIFIKASI: 'background:#e0e7ff;color:#4338ca;', PENDING: 'background:#dbeafe;color:#1d4ed8;' };
+    return `<span class="swal-detail-badge" style="${map[s] || map.PENDING}">${s}</span>`;
+  };
+
   const handleDetail = (report: any) => {
     Swal.fire({
-      title: report.title,
+      title: " ",
       html: `
-        <div style="text-align:left;font-size:13px;">
-          <p><b>Pelapor:</b> ${report.user?.name || "-"}</p>
-          <p><b>Kategori:</b> ${report.category?.name || "-"}</p>
-          <p><b>Lokasi:</b> ${report.location || "-"}</p>
-          <p><b>Status:</b> <span style="font-weight:700;text-transform:uppercase;">${report.status}</span></p>
-          <p><b>Tanggal:</b> ${new Date(report.createdAt).toLocaleDateString("id-ID")}</p>
-          <hr style="margin:10px 0;">
-          <p>${report.description}</p>
-          ${report.images?.length > 0 ? `<img src="${report.images[0].url}" style="margin-top:12px;max-width:100%;border-radius:8px;" />` : ""}
+        <div class="swal-logo-header"><img src="/logo.png" alt="SIWARGA" /><span style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">Detail Pengaduan</span></div>
+        <div style="text-align:center;margin-bottom:16px;">
+          <div style="font-size:16px;font-weight:700;color:#1f2937;">${report.title}</div>
         </div>
+        <div class="swal-detail-row"><span class="swal-detail-label">Pelapor</span><span class="swal-detail-value">${report.user?.name || '-'}</span></div>
+        <div class="swal-detail-row"><span class="swal-detail-label">Kategori</span><span class="swal-detail-value">${report.category?.name || '-'}</span></div>
+        <div class="swal-detail-row"><span class="swal-detail-label">Lokasi</span><span class="swal-detail-value">${report.location || '-'}</span></div>
+        <div class="swal-detail-row"><span class="swal-detail-label">Status</span><span class="swal-detail-value">${statusBadge(report.status)}</span></div>
+        <div class="swal-detail-row"><span class="swal-detail-label">Tanggal</span><span class="swal-detail-value">${new Date(report.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span></div>
+        ${report.description ? `<div class="swal-detail-desc">${report.description}</div>` : ''}
+        ${report.images?.length > 0 ? `<img src="${report.images[0].url}" alt="Foto" class="swal-detail-image" />` : ''}
       `,
       confirmButtonText: "Tutup",
       confirmButtonColor: "#2563EB",
