@@ -32,7 +32,6 @@ async function startServer() {
     storage: multerS3({
       s3: s3 as any,
       bucket: bucketName,
-      acl: "public-read",
       metadata: (req, file, cb) => {
         cb(null, { fieldName: file.fieldname });
       },
