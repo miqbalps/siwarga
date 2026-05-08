@@ -21,10 +21,14 @@ export default function App() {
   // Simulate auth check
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) {
+    const storedUser = localStorage.getItem("user");
+    if (token && storedUser) {
       setIsAuthenticated(true);
-      // In real app, fetch user profile
-      setUser({ name: "User", role: "WARGA" });
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch(e) {
+        console.error("Failed to parse user data", e);
+      }
     }
   }, []);
 

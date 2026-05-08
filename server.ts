@@ -150,6 +150,38 @@ async function startServer() {
     res.json(letters);
   });
 
+  app.post("/api/letters", authenticateToken, async (req: any, res: any) => {
+    try {
+      let { letterTypeId, villageId, attachments } = req.body;
+      
+      if (!villageId) {
+        const v = await prisma.village.findFirst();
+        villageId = v?.id;
+      }
+      if (!letterTypeId) {
+        const l = await prisma.letterType.findFirst();
+        letterTypeId = l?.id;
+      }
+
+      if (!villageId || !letterTypeId) {
+        return res.status(400).json({ message: "Master data (Village/LetterType) is missing. Please run /api/seed first." });
+      }
+
+      const letter = await prisma.letter.create({
+        data: {
+          userId: req.user.id,
+          letterTypeId,
+          villageId,
+          attachments,
+          letterNumber: `SR-${Date.now()}`
+        }
+      });
+      res.status(201).json(letter);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to create letter", error });
+    }
+  });
+
   // Seeder endpoint (for demo purposes)
   app.post("/api/seed", async (req, res) => {
     try {
@@ -190,6 +222,42 @@ async function startServer() {
       include: { user: true, category: true, images: true },
     });
     res.json(complaints);
+  });
+
+  app.post("/api/complaints", authenticateToken, async (req: any, res: any) => {
+    try {
+      let { categoryId, villageId, title, description, location, images } = req.body;
+
+      if (!villageId) {
+        const v = await prisma.village.findFirst();
+        villageId = v?.id;
+      }
+      if (!categoryId) {
+        const c = await prisma.complaintCategory.findFirst();
+        categoryId = c?.id;
+      }
+
+      if (!villageId || !categoryId) {
+        return res.status(400).json({ message: "Master data (Village/Category) is missing. Please run /api/seed first." });
+      }
+
+      const complaint = await prisma.complaint.create({
+        data: {
+          userId: req.user.id,
+          categoryId,
+          villageId,
+          title,
+          description,
+          location,
+          images: {
+            create: images ? images.map((url: string) => ({ url })) : []
+          }
+        }
+      });
+      res.status(201).json(complaint);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to create complaint", error });
+    }
   });
 
   // Serve uploaded files
